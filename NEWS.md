@@ -2,6 +2,9 @@
 
 ## Noteworthy changes in release ?.? (????-??-??) [?]
 
+
+## Noteworthy changes in release 36.2.1 (2023-06-16) [stable]
+
 ### Incompatible Changes
 
   - Using latest typecheck and specl rocks requires that
@@ -13,6 +16,10 @@
     accordingly.
 
 ### Bugs Fixed
+
+  - `posix.unistd.read` and `posix.sys.socket.recv` no longer
+    hide the underlying real error by casting a ssize_t result
+    into an unsigned site_t local.
 
   - Fix a typo in the `lflag` argument name in the termios
     table LDocs.
