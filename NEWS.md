@@ -2,6 +2,9 @@
 
 ## Noteworthy changes in release ?.? (????-??-??) [?]
 
+
+## Noteworthy changes in release 36.3 (2025-02-16) [stable]
+
 ### Bugs Fixed
 
   - `posix.sys.socket.recvfrom` no longer casts a ssize_t result
@@ -11,6 +14,12 @@
 
   - Using conditional compilation for functions that have been
     implemented when compiling with luajit.
+
+### New Features
+
+  - Adds `tcgetwinsize` and `tcsetwinsize` functions to `posix.termio`
+    enabling to get and set winsize, when supported by the underlying
+    host system.
 
 
 ## Noteworthy changes in release 36.2.1 (2023-06-16) [stable]
