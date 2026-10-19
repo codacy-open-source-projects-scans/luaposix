@@ -1,6 +1,6 @@
 --[[
- POSIX library for Lua 5.1, 5.2, 5.3 & 5.4.
- Copyright (C) 2013-2025 Gary V. Vaughan
+ POSIX library for Lua 5.1, 5.2, 5.3, 5.4, & 5.5.
+ Copyright (C) 2013-2026 Gary V. Vaughan
  Copyright (C) 2010-2013 Reuben Thomas <rrt@sc3d.org>
  Copyright (C) 2008-2010 Natanael Copa <natanael.copa@gmail.com>
 ]]
@@ -32,7 +32,6 @@ local _ENV = require 'posix._strict' {
    bor = require 'posix._base'.bor,
    close = require 'posix.unistd'.close,
    dup2 = require 'posix.unistd'.dup2,
-   errno = require 'posix.errno'.errno,
    error = error,
    execp = require 'posix.unistd'.execp,
    exit = os.exit,
@@ -65,11 +64,6 @@ local _ENV = require 'posix._strict' {
    unlockpt = require 'posix.stdlib'.unlockpt,
    wait = require 'posix.sys.wait'.wait,
 }
-
-
--- FIXME: specl-14.x breaks function environments here :(
-local GLOB_MARK, STDIN_FILENO, STDOUT_FILENO, _exit, close, errno, execp, exit, fork, glob, insert, pipe, remove, wait =
-   GLOB_MARK, STDIN_FILENO, STDOUT_FILENO, _exit, close, errno, execp, exit, fork, glob, insert, pipe, remove, wait
 
 
 local function Peuidaccess(file, mode)
@@ -117,9 +111,8 @@ end
 local function Pexecx(task, ...)
    if type(task) == 'table' then
       local path = remove(task, 1)
-      execp(path, task)
-      -- Only get here if there's an error; kill the fork
-      local _, n = errno()
+      -- Only returns if there's an error; kill the fork
+      local _, _, n = execp(path, task)
       _exit(n)
    else
       -- Function call must flush open file descriptors et.al. with `os.exit()`

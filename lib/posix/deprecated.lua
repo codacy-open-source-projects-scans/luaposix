@@ -1,6 +1,6 @@
 --[[
- POSIX library for Lua 5.1, 5.2, 5.3 & 5.4.
- Copyright (C) 2014-2025 Gary V. Vaughan
+ POSIX library for Lua 5.1, 5.2, 5.3, 5.4, & 5.5.
+ Copyright (C) 2014-2026 Gary V. Vaughan
 ]]
 --[[--
  Legacy Lua POSIX bindings.
@@ -11,6 +11,10 @@
 ]]
 
 local HAVE_DEBUG, _debug = pcall(require, 'std._debug')
+if not HAVE_DEBUG then
+   -- Without std._debug, check arguments only when typecheck does.
+   _debug = {argcheck = pcall(require, 'typecheck')}
+end
 
 local argerror = require 'posix._base'.argerror
 
@@ -57,7 +61,6 @@ local _ENV = require 'posix._strict' {
    _SC_STREAM_MAX = require 'posix.unistd'._SC_STREAM_MAX,
    _SC_TZNAME_MAX = require 'posix.unistd'._SC_TZNAME_MAX,
    _SC_VERSION = require 'posix.unistd'._SC_VERSION,
-   _debug = HAVE_DEBUG and _debug or {},
    argscheck = require 'posix._base'.argscheck,
    bind = require 'posix.sys.socket'.bind,
    bor = require 'posix._base'.bor,
@@ -113,12 +116,6 @@ local _ENV = require 'posix._strict' {
    uname = require 'posix.sys.utsname'.uname,
    unpack = table.unpack or unpack,
 }
-
-
-
--- FIXME: specl-14.x breaks function environments here :(
-local bor, exec, getegid, getgrgid, getgrnam, getrlimit, gmtime, gsub, localtime, lower, mktime, nanosleep, strftime, strptime, sub, time, uname =
-   bor, exec, getegid, getgrgid, getgrnam, getrlimit, gmtime, gsub, localtime, lower, mktime, nanosleep, strftime, strptime, sub, time, uname
 
 
 local OPENLOG_MAP = {
@@ -355,7 +352,7 @@ end
 local Pfadvise
 if posix_fadvise then
    -- When supported by underlying system
-   Pfadvise = argscheck('fadvise(FILE*, int, int, int)', function(fh, ...)
+   Pfadvise = argscheck('fadvise(file, int, int, int)', function(fh, ...)
       return posix_fadvise(fileno(fh), ...)
    end)
 end
@@ -996,7 +993,8 @@ return {
    -- @treturn[2] string error message
    uname = argscheck('uname([?string])', function(spec)
       local u = uname()
-      return gsub(optstring('uname', 1, spec, '%s %n %r %v %m'), '%%(.)', function(s)
+      -- Parenthesized to return only the string, not gsub's count too.
+      return (gsub(optstring('uname', 1, spec, '%s %n %r %v %m'), '%%(.)', function(s)
          if s == '%' then
             return '%'
          elseif s == 'm' then
@@ -1012,7 +1010,7 @@ return {
          else
             badoption('uname', 1, 'format', s)
          end
-      end)
+      end))
    end),
 }
 

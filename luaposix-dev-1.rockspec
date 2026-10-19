@@ -1,5 +1,6 @@
-local _MODREV, _SPECREV = 'git', '-1'
+local _MODREV, _SPECREV = 'dev', '-1'
 
+rockspec_format = '3.0'
 package = 'luaposix'
 version = _MODREV .. _SPECREV
 
@@ -9,12 +10,12 @@ description = {
       A library binding various POSIX APIs. POSIX is the IEEE Portable
       Operating System Interface standard. luaposix is based on lposix.
    ]],
-   homepage = 'http://github.com/luaposix/luaposix/',
+   homepage = 'https://github.com/luaposix/luaposix/',
    license = 'MIT/X11',
 }
 
 dependencies = {
-   'lua >= 5.1, < 5.5',
+   'lua >= 5.1, < 5.6',
 }
 
 do
@@ -26,7 +27,7 @@ do
 end
 
 source = {
-   url = 'http://github.com/luaposix/luaposix/archive/v' .. _MODREV .. '.zip',
+   url = 'https://github.com/luaposix/luaposix/archive/v' .. _MODREV .. '.zip',
    dir = 'luaposix-' .. _MODREV,  
 }
 
@@ -53,10 +54,27 @@ build = {
       ,
 }
 
-if _MODREV == 'git' then
-   dependencies[#dependencies + 1] = 'ldoc'
+-- The bad argument specs expect typecheck's runtime argument checks.
+test_dependencies = {
+   'ansicolors',
+   'luacov',
+   'specl >= 15',
+   'typecheck >= 3.1',
+}
+
+test = {
+   type = 'command',
+   command = 'specl -vfreport --coverage spec/*_spec.yaml',
+}
+
+if _MODREV == 'dev' then
+   -- luarocks.org's ldoc fails on Lua 5.5; gvvaughan's works.
+   build_dependencies = {'gvvaughan/ldoc'}
 
    source = {
-      url = 'git://github.com/luaposix/luaposix.git',
+      url = 'git+https://github.com/luaposix/luaposix.git',
    }
+else
+   -- A release commits its LDocs, so don't build them again.
+   build.build_command = build.build_command .. ' LDOC=true'
 end

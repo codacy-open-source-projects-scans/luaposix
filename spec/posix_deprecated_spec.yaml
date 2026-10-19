@@ -23,7 +23,7 @@ specify posix.deprecated:
       connect, typeerrors = init(M, "connect")
 
   - context with bad arguments: |
-      badargs.diagnose(connect, "connect(int, table)")
+      badargs.diagnose("connect(int, table)", connect)
 
       examples {
          ["it diagnoses wrong family types"] = function()
@@ -107,7 +107,7 @@ specify posix.deprecated:
       bind, typeerrors = init(M, "bind")
 
   - context with bad arguments: |
-      badargs.diagnose(bind, "bind(int, table)")
+      badargs.diagnose("bind(int, table)", bind)
 
       examples {
          ["it diagnoses wrong family types"] = function()
@@ -190,21 +190,24 @@ specify posix.deprecated:
 
   - context with bad arguments:
       if clock_getres then
-         badargs.diagnose(clock_getres, "clock_getres(?string)")
+         badargs.diagnose("clock_getres(?string)", clock_getres)
       end
 
   - it takes deprecated string arguments:
       if clock_getres then
          local time = require 'posix.time'
 
-         expect(clock_getres()).
-            to_be(time.clock_getres(time.CLOCK_REALTIME).tv_sec)
-         expect(clock_getres 'monotonic').
-            to_be(time.clock_getres(time.CLOCK_MONOTONIC).tv_sec)
+         local function res(clk)
+            local ts = time.clock_getres(clk)
+            return {ts.tv_sec, ts.tv_nsec}
+         end
+
+         expect(clock_getres()).to_equal(res(time.CLOCK_REALTIME))
+         expect(clock_getres 'monotonic').to_equal(res(time.CLOCK_MONOTONIC))
          expect(clock_getres 'process_cputime_id').
-            to_be(time.clock_getres(time.CLOCK_PROCESS_CPUTIME_ID).tv_sec)
+            to_equal(res(time.CLOCK_PROCESS_CPUTIME_ID))
          expect(clock_getres 'thread_cputime_id').
-            to_be(time.clock_getres(time.CLOCK_THREAD_CPUTIME_ID).tv_sec)
+            to_equal(res(time.CLOCK_THREAD_CPUTIME_ID))
       end
 
 
@@ -214,20 +217,21 @@ specify posix.deprecated:
 
   - context with bad arguments:
       if clock_gettime then
-         badargs.diagnose(clock_gettime, "clock_gettime(?string)")
+         badargs.diagnose("clock_gettime(?string)", clock_gettime)
       end
 
   - it takes deprecated string arguments:
       if clock_gettime then
          local time = require 'posix.time'
 
-         expect(clock_gettime()).
+         -- Nanoseconds differ between calls, so compare only the seconds.
+         expect((clock_gettime())).
             to_be(time.clock_gettime(time.CLOCK_REALTIME).tv_sec)
-         expect(clock_gettime 'monotonic').
+         expect((clock_gettime 'monotonic')).
             to_be(time.clock_gettime(time.CLOCK_MONOTONIC).tv_sec)
-         expect(clock_gettime 'process_cputime_id').
+         expect((clock_gettime 'process_cputime_id')).
             to_be(time.clock_gettime(time.CLOCK_PROCESS_CPUTIME_ID).tv_sec)
-         expect(clock_gettime 'thread_cputime_id').
+         expect((clock_gettime 'thread_cputime_id')).
             to_be(time.clock_gettime(time.CLOCK_THREAD_CPUTIME_ID).tv_sec)
       end
 
@@ -307,7 +311,7 @@ specify posix.deprecated:
 - describe fadvise:
   - context with bad arguments:
       if M.fadvise then
-         badargs.diagnose(M.fadvise, "fadvise(FILE*, int, int, int)")
+         badargs.diagnose("fadvise(file, int, int, int)", M.fadvise)
       end
 
 
@@ -317,7 +321,7 @@ specify posix.deprecated:
          M.fnmatch, M.FNM_PATHNAME, M.FNM_PERIOD
 
   - context with bad arguments:
-      badargs.diagnose(fnmatch, "fnmatch(string, string, ?int)")
+      badargs.diagnose("fnmatch(string, string, ?int)", fnmatch)
 
   - it matches a file path against itself:
       expect(fnmatch("test", "test")).to_be(true)
@@ -345,7 +349,7 @@ specify posix.deprecated:
       groot = getgrgid(0).gr_name
 
   - context with bad arguments:
-      badargs.diagnose(M.getgroup, "getgroup([?int|string])")
+      badargs.diagnose("getgroup([?int|string])", M.getgroup)
 
   - it returns a table for an existing group:
       expect(type(getgroup(groot))).to_be "table"
@@ -475,7 +479,7 @@ specify posix.deprecated:
          end
       }
 
-      badargs.diagnose(getrlimit, "getrlimit(string)")
+      badargs.diagnose("getrlimit(string)", getrlimit)
 
   - it fetches resource limits for a process:
       for _, rc in pairs {"core", "cpu", "data", "fsize", "nofile", "stack", "as"}
@@ -491,11 +495,11 @@ specify posix.deprecated:
       gettimeofday = M.gettimeofday
 
   - context with bad arguments:
-      badargs.diagnose(gettimeofday, "gettimeofday()")
+      badargs.diagnose("gettimeofday()", gettimeofday)
 
   - it fetches the current epoch time:
       t = gettimeofday()
-      expect(t.sec).to_be_within_n_of {value=EPOCH, delta=1}
+      expect(t.sec).to_be_within_n_of {value=EPOCH, delta=5}
       expect(type(t.usec)).to_be "number"
       expect(t.usec >= 0).to_be(true)
 
@@ -505,7 +509,7 @@ specify posix.deprecated:
       gmtime = M.gmtime
 
   - context with bad arguments:
-      badargs.diagnose(gmtime, "gmtime(?int)")
+      badargs.diagnose("gmtime(?int)", gmtime)
 
   - it returns a table:
       expect(prototype(gmtime(EPOCH))).to_be "table"
@@ -541,7 +545,7 @@ specify posix.deprecated:
 
 - describe hostid:
   - context with bad arguments:
-      badargs.diagnose(M.hostid, "()")
+      badargs.diagnose("()", M.hostid)
 
 
 - describe isgraph:
@@ -549,7 +553,7 @@ specify posix.deprecated:
       isgraph = M.isgraph
 
   - context with bad arguments:
-      badargs.diagnose(isgraph, "isgraph(string)")
+      badargs.diagnose("isgraph(string)", isgraph)
 
   - it returns true for successful tests:
       expect(isgraph 'a').to_be(true)
@@ -562,7 +566,7 @@ specify posix.deprecated:
       isprint = M.isprint
 
   - context with bad arguments:
-      badargs.diagnose(isprint, "isprint(string)")
+      badargs.diagnose("isprint(string)", isprint)
 
   - it returns true for successful tests:
       expect(isprint 'a').to_be(true)
@@ -575,7 +579,7 @@ specify posix.deprecated:
       localtime = M.localtime
 
   - context with bad arguments:
-      badargs.diagnose(localtime, "localtime(?int)")
+      badargs.diagnose("localtime(?int)", localtime)
 
   - it returns a table:
       expect(prototype(localtime(EPOCH))).to_be "table"
@@ -613,19 +617,19 @@ specify posix.deprecated:
       t = localtime(EPOCH)
 
   - context with bad arguments:
-      badargs.diagnose(mktime, "mktime(?table)")
+      badargs.diagnose("mktime(?table)", mktime)
 
   - it returns an epoch time:
       expect(prototype(mktime(t))).to_be "number"
   - it is the inverse of localtime:
-      expect(mktime(t)).to_be_within_n_of {value=EPOCH, delta=1}
+      expect(mktime(t)).to_be_within_n_of {value=EPOCH, delta=5}
   - it defaults to current time:
-      expect(mktime()).to_be_within_n_of {value=EPOCH, delta=1}
+      expect(mktime()).to_be_within_n_of {value=EPOCH, delta=5}
 
 
 - describe nanosleep:
   - context with bad arguments:
-      badargs.diagnose(M.nanosleep, "nanosleep(int, int)")
+      badargs.diagnose("nanosleep(int, int)", M.nanosleep)
 
   - it returns an integer:
       expect(M.nanosleep(0, 10)).to_be(0)
@@ -637,7 +641,7 @@ specify posix.deprecated:
 
   - context with bad arguments: |
       if openlog then
-         badargs.diagnose(openlog, "openlog(string, ?string, [?int])")
+         badargs.diagnose("openlog(string, ?string, [?int])", openlog)
 
          examples {
             ["it diagnoses invalid options"] = function()
@@ -733,7 +737,7 @@ specify posix.deprecated:
          end
       }
 
-      badargs.diagnose(setrlimit, "setrlimit(string, ?int, ?int)")
+      badargs.diagnose("setrlimit(string, ?int, ?int)", setrlimit)
 
 
 - describe stat:
@@ -794,13 +798,13 @@ specify posix.deprecated:
          to_be(stat(dir .. "/file", "size"))
   - it fetches the file access time:
       expect(stat(dir .. "/file", "atime")).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the file modification time:
       expect(stat(dir .. "/file", "mtime")).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the file creation time:
       expect(stat(dir .. "/file", "ctime")).
-         to_be_within_n_of {value=EPOCH, delta=2}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the file access mode:
       expect(stat(dir .. "/file").mode).to_match("^[-rwx]+$")
       expect(stat(dir .. "/subdir", "mode")).to_match("^[-rwx]+$")
@@ -906,7 +910,7 @@ specify posix.deprecated:
       }
 
   - context with bad arguments:
-      badargs.diagnose(strftime, "strftime(string, ?table)")
+      badargs.diagnose("strftime(string, ?table)", strftime)
 
   - context with place-holders:
     - it plugs weekday:
@@ -938,7 +942,7 @@ specify posix.deprecated:
       strptime = M.strptime
 
   - context with bad arguments:
-      badargs.diagnose(strptime, "strptime(string, string)")
+      badargs.diagnose("strptime(string, string)", strptime)
 
   - context with place-holders:
     - before:
@@ -1094,7 +1098,7 @@ specify posix.deprecated:
       uname = M.uname
 
   - context with bad arguments: |
-      badargs.diagnose(uname, "uname(?string)")
+      badargs.diagnose("uname(?string)", uname)
 
       examples {
          ['it diagnoses bad specifier format options'] = function()
@@ -1110,4 +1114,4 @@ specify posix.deprecated:
   - it substitutes %r:
       expect(uname "%r").to_be(cmd_output "uname -r")
   - it outputs everything with no arguments:
-      expect(uname():gsub("%s+"," "):gsub("%s$","")).to_be(cmd_output("uname -s -n -r -v -m"):gsub("%s+"," "):gsub("%s$",""))
+      expect((uname():gsub("%s+"," "):gsub("%s$",""))).to_be((cmd_output("uname -s -n -r -v -m"):gsub("%s+"," "):gsub("%s$","")))

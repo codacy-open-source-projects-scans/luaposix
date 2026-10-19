@@ -7,8 +7,8 @@ By the [luaposix project][github]
 [![workflow status](https://github.com/luaposix/luaposix/actions/workflows/spec.yml/badge.svg?branch=master)](https://github.com/luaposix/luaposix/actions)
 [![codecov.io](https://codecov.io/github/luaposix/luaposix/coverage.svg?branch=master)](https://codecov.io/github/luaposix/luaposix?branch=master)
 
-This is a POSIX binding for [LuaJIT][], [Lua][] 5.1, 5.2, 5.3 and 5.4; like
-most libraries it simply binds to C APIs on the underlying system, so it
+This is a POSIX binding for [LuaJIT][], [Lua][] 5.1, 5.2, 5.3, 5.4, and 5.5.
+Like most libraries it simply binds to C APIs on the underlying system, so it
 won't work on non-POSIX systems. However, it does try to detect the
 level of POSIX conformance of the underlying system and bind only
 available APIs.
@@ -41,7 +41,7 @@ To install current git master (for testing, before submitting a bug
 report for example):
 
 ```bash
-    luarocks install http://raw.github.com/luaposix/luaposix/master/luaposix-git-1.rockspec
+    luarocks install https://raw.githubusercontent.com/luaposix/luaposix/master/luaposix-dev-1.rockspec
 ```
 
 The best way to install without [LuaRocks][], is to call the bundled
@@ -62,8 +62,8 @@ Note that there are full logs of complete builds for every commit in
 [Github Actions][actions], which you can compare with your progress if you
 get stuck.
 
-[luarocks]: http://www.luarocks.org "Lua package manager"
-[releases]: http://github.com/luaposix/luaposix/releases
+[luarocks]: https://luarocks.org "Lua package manager"
+[releases]: https://github.com/luaposix/luaposix/releases
 [actions]: https://github.com/luaposix/luaposix/actions
 
 
@@ -79,7 +79,7 @@ API declarations, which you can require individually:
 
 The authoritative online POSIX reference is published at [SUSv3][].
 
-[susv3]: http://www.opengroup.org/onlinepubs/007904875/toc.htm
+[susv3]: https://pubs.opengroup.org/onlinepubs/007904875/toc.htm
 
 
 Documentation
@@ -89,7 +89,7 @@ The latest release of this library is [documented in LDoc][github.io].
 Pre-built HTML files are included in the release, and contain links to
 the appropriate [SUSv3][] manual pages.
 
-[github.io]: http://luaposix.github.io/luaposix
+[github.io]: https://luaposix.github.io/luaposix
 
 
 Example code
@@ -100,7 +100,7 @@ examples in the generated documentation and BDD `specs/*_spec.yaml`.
 
 For a complete application, see the [GNU Zile][].
 
-[GNU Zile]: http://git.savannah.gnu.org/cgit/zile.git/log/?h=lua "A cut-down Emacs clone"
+[GNU Zile]: https://git.savannah.gnu.org/cgit/zile.git/log/?h=lua "A cut-down Emacs clone"
 
 
 Bugs reports and code contributions
@@ -146,4 +146,4 @@ points when proposing changes:
    POSIX APIs in the simplest way possible. If necessary, more
    convenient wrappers can be added in Lua (posix.lua).
 
-[issues]: http://github.com/luaposix/luaposix/issues
+[issues]: https://github.com/luaposix/luaposix/issues

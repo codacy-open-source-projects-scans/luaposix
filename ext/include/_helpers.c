@@ -1,6 +1,6 @@
 /*
- * POSIX library for Lua 5.1, 5.2, 5.3 & 5.4.
- * Copyright (C) 2013-2025 Gary V. Vaughan
+ * POSIX library for Lua 5.1, 5.2, 5.3, 5.4, & 5.5.
+ * Copyright (C) 2013-2026 Gary V. Vaughan
  * Copyright (C) 2010-2013 Reuben Thomas <rrt@sc3d.org>
  * Copyright (C) 2008-2010 Natanael Copa <natanael.copa@gmail.com>
  * Clean up and bug fixes by Leo Razoumov <slonik.az@gmail.com> 2006-10-11
@@ -323,12 +323,14 @@ optstringfield(lua_State *L, int index, const char *k, const char *def)
 static int
 pusherror(lua_State *L, const char *info)
 {
+	/* Save errno before the Lua API calls below can allocate and clobber it. */
+	int err = errno;
 	lua_pushnil(L);
 	if (info==NULL)
-		lua_pushstring(L, strerror(errno));
+		lua_pushstring(L, strerror(err));
 	else
-		lua_pushfstring(L, "%s: %s", info, strerror(errno));
-	lua_pushinteger(L, errno);
+		lua_pushfstring(L, "%s: %s", info, strerror(err));
+	lua_pushinteger(L, err);
 	return 3;
 }
 

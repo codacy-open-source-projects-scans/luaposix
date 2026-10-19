@@ -2,6 +2,68 @@
 
 ## Noteworthy changes in release ?.? (????-??-??) [?]
 
+### New Features
+
+  - Support for XSI extensions `WIFCONTINUED` and `WCONTINUED` in
+    `posix.sys.wait`.
+
+### Incompatible Changes
+
+  - Without `std._debug` installed, `posix.deprecated` functions now
+    check their arguments whenever `typecheck` is installed, rather
+    than never, so a bad argument raises an error instead of
+    misbehaving.  Install `std._debug` and set `_DEBUG = false` to turn
+    the checks off again.
+
+### Bugs Fixed
+
+  - `posix.unistd.getopt` accepts any number of arguments.  Previously,
+    an argument list longer than about 20 entries could overflow the
+    Lua stack and corrupt memory, and more than 252 failed outright.
+
+  - Installing a release rockspec no longer rebuilds the LDocs that the
+    release already includes, so an installed ldoc that fails, as
+    luarocks.org's does with Lua 5.5, no longer breaks the install.
+
+
+## Noteworthy changes in release 37.0 (2026-10-11) [stable]
+
+### New Features
+
+  - Support for Lua 5.5.
+
+  - `posix.time.clock_getres` and `posix.time.clock_gettime` are now
+    available on OpenBSD, which has both functions but defines
+    `_POSIX_TIMERS` to -1.
+
+### Incompatible Changes
+
+  - When running as root, `posix.unistd.setpid` with 'u' or 'g' now
+    drops all supplementary groups before setting the user or group
+    id, so that a process dropping its privileges does not keep the
+    access its supplementary groups grant.  If dropping them fails,
+    `setpid` returns `nil`, a "setgroups: ..." error message and the
+    errnum.  Unprivileged callers are unaffected.
+
+  - `posix.deprecated.uname` returns only the formatted string, rather
+    than also leaking the number of substitutions made as a second
+    result.
+
+### Bugs Fixed
+
+  - `posix.deprecated.fadvise` accepts file handles again, rather than
+    rejecting every argument with "FILE* expected, got file" whenever
+    typecheck is installed.
+
+  - APIs returning `nil`, an error message and an errnum on failure
+    now always report the errnum of the call that failed.  Previously,
+    `errno` could be clobbered while building the error message, so
+    the errnum was occasionally wrong.
+
+  - `posix.execx` exits the forked child with the right errnum when
+    the command cannot be executed, where it sometimes exited with
+    status 0, as if the command had succeeded.
+
 
 ## Noteworthy changes in release 36.3 (2025-02-16) [stable]
 

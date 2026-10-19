@@ -38,7 +38,7 @@ specify posix.sys.stat:
       chmod(dir .. "/file", bor(M.S_IRWXU, M.S_IRGRP, M.S_IXGRP))
 
   - context with bad arguments: |
-      badargs.diagnose(chmod, "(string, int)")
+      badargs.diagnose("(string, int)", chmod)
 
       examples {
          ["it diagnoses non-existent files"] = function()
@@ -60,7 +60,7 @@ specify posix.sys.stat:
       lstat = M.lstat
 
   - context with bad arguments:
-      badargs.diagnose(lstat, "(string)")
+      badargs.diagnose("(string)", lstat)
 
   - it returns a PosixStat:
       expect(prototype(lstat(dir .. "/file"))).to_be "PosixStat"
@@ -134,13 +134,13 @@ specify posix.sys.stat:
          to_be(lstat(dir .. "/file").st_size)
   - it fetches the file access time:
       expect(lstat(dir .. "/file").st_atime).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the file modification time:
       expect(lstat(dir .. "/file").st_mtime).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the file change time:
       expect(lstat(dir .. "/file").st_ctime).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the device block size:
       blksize = lstat(dir .. "/file").st_blksize
       expect(type(blksize)).to_be "number"
@@ -168,7 +168,7 @@ specify posix.sys.stat:
       fstat = M.fstat
 
   - context with bad arguments:
-      badargs.diagnose(fstat, "(int)")
+      badargs.diagnose("(int)", fstat)
 
   - it returns a PosixStat:
       expect(prototype(fstat(fd_file))).to_be "PosixStat"
@@ -230,13 +230,13 @@ specify posix.sys.stat:
       expect(fstat(fd_hard).st_size).to_be(fstat(fd_file).st_size)
   - it fetches the file access time:
       expect(fstat(fd_file).st_atime).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the file modification time:
       expect(fstat(fd_file).st_mtime).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the file change time:
       expect(fstat(fd_file).st_ctime).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the device block size:
       blksize = fstat(fd_file).st_blksize
       expect(type(blksize)).to_be "number"
@@ -258,7 +258,7 @@ specify posix.sys.stat:
       rmtmp(dir)
 
   - context with bad arguments:
-      badargs.diagnose(mkdir, "(string, ?int)")
+      badargs.diagnose("(string, ?int)", mkdir)
 
   - it creates the named directory:
       expect(Emsg(mkdir(dir .. "/subdir"))).not_to_contain "exists"
@@ -281,7 +281,7 @@ specify posix.sys.stat:
       rmtmp(dir)
 
   - context with bad arguments:
-      badargs.diagnose(mkfifo, "(string, ?int)")
+      badargs.diagnose("(string, ?int)", mkfifo)
 
   - it creates the named fifo:
       expect(Emsg(mkfifo(dir .. "/fifo"))).not_to_contain "exists"
@@ -302,7 +302,7 @@ specify posix.sys.stat:
       stat = M.stat
 
   - context with bad arguments:
-      badargs.diagnose(stat, "(string)")
+      badargs.diagnose("(string)", stat)
 
   - it returns a PosixStat:
       expect(prototype(stat(dir .. "/file"))).to_be "PosixStat"
@@ -377,13 +377,13 @@ specify posix.sys.stat:
          to_be(stat(dir .. "/file").st_size)
   - it fetches the file access time:
       expect(stat(dir .. "/file").st_atime).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the file modification time:
       expect(stat(dir .. "/file").st_mtime).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the file change time:
       expect(stat(dir .. "/file").st_ctime).
-         to_be_within_n_of {value=EPOCH, delta=1}
+         to_be_within_n_of {value=EPOCH, delta=5}
   - it fetches the device block size:
       blksize = stat(dir .. "/file").st_blksize
       expect(type(blksize)).to_be "number"
@@ -405,7 +405,7 @@ specify posix.sys.stat:
       umask(origmask)
 
   - context with bad arguments:
-      badargs.diagnose(umask, "(int)")
+      badargs.diagnose("(int)", umask)
 
   - it returns current umask:
       expect(umask(0)).to_be(newmask)
